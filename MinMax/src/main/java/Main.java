@@ -1,5 +1,9 @@
+import game.OX;
+import game.TicToeBoard;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("S");
+        Game game = new Game();
+        game.nextMove(new TicToeBoard(), OX.O);
     }
 }

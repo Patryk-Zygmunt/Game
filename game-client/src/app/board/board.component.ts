@@ -9,6 +9,7 @@ import {GameService} from "../_services/game.service";
 })
 export class BoardComponent implements OnInit {
 
+  @Input()
   side:number;
 
   @Input()
@@ -48,9 +49,7 @@ this._board =this.clear();
     return  new Array<FieldEnum[]>(3).fill(new Array<FieldEnum>(3).fill(FieldEnum.EMPTY));
   }
 
-  chooseSide(side: number){
-    this.side = side;
-  }
+
 
 
 mapSign(field: FieldEnum):string{

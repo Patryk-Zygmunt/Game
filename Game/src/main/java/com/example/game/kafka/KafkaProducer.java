@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-@Service
+//@Service
 public class KafkaProducer {
 
     public final KafkaTemplate<String,String> kafkaTemplate;

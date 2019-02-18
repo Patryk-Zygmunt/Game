@@ -1,12 +1,28 @@
 package com.example.game;
 
-class Field{
+import org.springframework.data.redis.core.RedisHash;
+
+import java.io.Serializable;
+
+
+public class Field implements Serializable {
+    private String id;
     private int x;
     private int y;
     private int value;
 
     public int getX() {
         return x;
+    }
+
+    public Field(String id, int x, int y, int value) {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+        this.value = value;
+    }
+
+    public Field() {
     }
 
     public void setX(int x) {
@@ -27,6 +43,14 @@ class Field{
 
     public void setValue(int value) {
         this.value = value;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
 

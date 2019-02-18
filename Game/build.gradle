@@ -5,6 +5,9 @@ plugins {
 
 apply plugin: 'io.spring.dependency-management'
 
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
@@ -16,8 +19,12 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation group: 'com.github.kstyrc', name: 'embedded-redis', version: '0.6'
     implementation 'org.apache.kafka:kafka-streams'
+    compile group: 'org.springframework.data', name: 'spring-data-redis', version: '2.1.5.RELEASE'
     implementation 'org.springframework.kafka:spring-kafka'
     runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+    
+    compile group: 'redis.clients', name: 'jedis', version: '2.9.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

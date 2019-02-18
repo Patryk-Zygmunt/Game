@@ -1,5 +1,6 @@
 package game;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -20,8 +21,9 @@ public class TicToeBoard extends Board<OX> {
 
     @Override
     public Board newState(int x,  OX v) {
-        this.board[x] = v;
-        return new TicToeBoard(this.board);
+       TicToeBoard newBoard = new TicToeBoard(Arrays.copyOf(this.board,9));
+        newBoard.getBoard()[x] = v;
+        return newBoard;
     }
 
     @Override
@@ -38,4 +40,7 @@ public class TicToeBoard extends Board<OX> {
         return IntStream.range(0, board.length).filter(i->isPossibleMove(i,OX.EMPTY))
                 .mapToObj(index->newState(index,v)).collect(Collectors.toList());
     }
+
+
+
 }

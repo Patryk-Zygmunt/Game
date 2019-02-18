@@ -15,6 +15,8 @@ export class AppComponent {
   name: string;
   disabled: boolean;
   board: FieldEnum[][]=[];
+  msg:string;
+  side:number=0;
 
   constructor(private gameService:GameService){
     this.connect()
@@ -29,6 +31,11 @@ export class AppComponent {
     this.ws.connect({}, function(frame) {
       that.ws.subscribe("/errors", function(message) {
         alert("Error " + message.body);
+      });
+      that.ws.subscribe("/topic/play", function(state) {
+        console.log(state);
+     if(that.side==0)   that.side = <number>(JSON.parse(state.body)).side
+       that.msg = <string>(JSON.parse(state.body)).gameId
       });
       that.ws.subscribe("/topic/board", function(state) {
         that.board = <FieldEnum[][]>(JSON.parse(state.body)).body.board;
@@ -47,9 +54,14 @@ export class AppComponent {
     console.log("Disconnected");
   }
 
-  setField(data: Field) {
-    this.ws.send("/app/play", {}, JSON.stringify(data));
+  play() {
+    this.ws.send("/app/play");
   }
+
+  setField(data: Field) {
+    this.ws.send("/app/move", {}, JSON.stringify(data));
+  }
+
 clear(){
   this.ws.send("/app/clear" );
 

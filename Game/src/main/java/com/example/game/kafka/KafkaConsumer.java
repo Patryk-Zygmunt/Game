@@ -6,8 +6,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
-@Service
-@EnableAsync
+//@Service
+//@EnableAsync
 
 public class KafkaConsumer {
 

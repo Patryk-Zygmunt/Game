@@ -2,7 +2,9 @@
   <!--<input  [ngModel] = "msgText" name="name" type="text">-->
 
   <button type="button" (click)="clear()">Clear</button>
+  <button type="button" (click)="play()">Play</button>
+  {{msg}}
 
-<app-board [board]="board" (setField)="setField($event)" ></app-board>
+<app-board [board]="board" (setField)="setField($event)" [side]="side" ></app-board>
 </div>
 
