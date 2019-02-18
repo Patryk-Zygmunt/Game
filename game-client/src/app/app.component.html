@@ -1,0 +1,8 @@
+<div class="container">
+  <!--<input  [ngModel] = "msgText" name="name" type="text">-->
+
+  <button type="button" (click)="clear()">Clear</button>
+
+<app-board [board]="board" (setField)="setField($event)" ></app-board>
+</div>
+

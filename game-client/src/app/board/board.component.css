@@ -1,0 +1,18 @@
+.field{
+  width:100px;
+  height:100px;
+  background-color: #20c997;
+  color: white;
+border: #0b2e13 1px solid;
+  flex: 1;
+  font-size: 78px;
+  line-height: 1.4;
+  font-weight: 900;
+  text-align: center;
+  font-family: "DejaVu Sans";
+
+}
+.board-line{
+  width: 300px;
+  display: flex;
+}
