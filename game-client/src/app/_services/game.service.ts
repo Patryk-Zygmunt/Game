@@ -8,7 +8,7 @@ import {Field, FieldEnum} from "../_model/interfaces";
 export class GameService {
 
   static rightMove(move: Field, board: FieldEnum[][]){
-   return board[move.y][move.y] == FieldEnum.EMPTY;
+   return board[move.y][move.x] == FieldEnum.EMPTY;
 
   }
 

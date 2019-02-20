@@ -24,6 +24,10 @@ public class Field implements Serializable {
 
     public Field() {
     }
+    public int getOppositeValue(){
+        if(value==1) return 2;
+        else return 1;
+    }
 
     public void setX(int x) {
         this.x = x;
@@ -47,6 +51,15 @@ public class Field implements Serializable {
 
     public String getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "Field{" +
+                "x=" + x +
+                ", y=" + y +
+                ", value=" + value +
+                '}';
     }
 
     public void setId(String id) {

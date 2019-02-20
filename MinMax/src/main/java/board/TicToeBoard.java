@@ -1,4 +1,4 @@
-package game;
+package board;
 
 import java.util.Arrays;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.stream.IntStream;
 
 public class TicToeBoard extends Board<OX> {
     private  OX[] board = {OX.EMPTY, OX.EMPTY, OX.EMPTY,OX.EMPTY, OX.EMPTY, OX.EMPTY,OX.EMPTY, OX.EMPTY, OX.EMPTY};
+    private Integer move=-1;
 
     public TicToeBoard() {
     }
@@ -15,7 +16,7 @@ public class TicToeBoard extends Board<OX> {
         return board;
     }
 
-    private TicToeBoard(OX[] board) {
+    public TicToeBoard(OX[] board) {
         this.board = board;
     }
 
@@ -23,6 +24,7 @@ public class TicToeBoard extends Board<OX> {
     public Board newState(int x,  OX v) {
        TicToeBoard newBoard = new TicToeBoard(Arrays.copyOf(this.board,9));
         newBoard.getBoard()[x] = v;
+        newBoard.move = x;
         return newBoard;
     }
 
@@ -41,6 +43,7 @@ public class TicToeBoard extends Board<OX> {
                 .mapToObj(index->newState(index,v)).collect(Collectors.toList());
     }
 
-
-
+    public int getMove() {
+        return move;
+    }
 }

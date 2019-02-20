@@ -1,4 +1,4 @@
-package game;
+package board;
 
 public interface GameValue {
 }

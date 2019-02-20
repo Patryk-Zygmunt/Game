@@ -1,4 +1,4 @@
-package game;
+package board;
 
 import java.util.List;
 
@@ -8,5 +8,6 @@ public abstract  class Board<T extends GameValue> {
     public abstract T getFieldValue(int x);
     public abstract boolean isPossibleMove(int x,  T v);
     public  abstract  List<Board> generatePossibleStates(T v);
+    public abstract  int getMove();
 
 }

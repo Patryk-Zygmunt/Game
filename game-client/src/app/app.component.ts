@@ -16,7 +16,7 @@ export class AppComponent {
   disabled: boolean;
   board: FieldEnum[][]=[];
   msg:string;
-  side:number=0;
+  side:number=2;
 
   constructor(private gameService:GameService){
     this.connect()
@@ -40,6 +40,9 @@ export class AppComponent {
       that.ws.subscribe("/topic/board", function(state) {
         that.board = <FieldEnum[][]>(JSON.parse(state.body)).body.board;
       });
+      that.ws.subscribe("/topic/ai", function(state) {
+        that.board = <FieldEnum[][]>(JSON.parse(state.body)).body.board;
+      });
       that.disabled = true;
     }, function(error) {
       alert("STOMP error " + error);
@@ -59,7 +62,8 @@ export class AppComponent {
   }
 
   setField(data: Field) {
-    this.ws.send("/app/move", {}, JSON.stringify(data));
+    console.log("FIELD::"+data);
+    this.ws.send("/app/move/ai", {}, JSON.stringify(data));
   }
 
 clear(){

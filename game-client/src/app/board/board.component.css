@@ -3,6 +3,7 @@
   height:100px;
   background-color: #20c997;
   color: white;
+  z-index: 10000;
 border: #0b2e13 1px solid;
   flex: 1;
   font-size: 78px;

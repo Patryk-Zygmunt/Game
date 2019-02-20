@@ -10,7 +10,7 @@ import {GameService} from "../_services/game.service";
 export class BoardComponent implements OnInit {
 
   @Input()
-  side:number;
+  side:number=1;
 
   @Input()
   _board : FieldEnum[][]=[];
@@ -34,13 +34,14 @@ this._board =this.clear();
 
   }
 
-  changeField(f:FieldEnum, x:number, y:number){
+  changeField( x:number, y:number){
+    console.log("CHANGE_FIELD")
     const move : Field = {
       x: x,
       y: y,
       value: this.side
     };
-    if(GameService.rightMove(move, this._board))
+   // if(GameService.rightMove(move, this._board))
     this.boardEvent.emit(move)
   }
 
@@ -53,7 +54,6 @@ this._board =this.clear();
 
 
 mapSign(field: FieldEnum):string{
-    console.log(field);
     switch (field) {
       case FieldEnum.EMPTY:
         return ""

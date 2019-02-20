@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.client.RestTemplate;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
@@ -35,12 +36,32 @@ public class GameController {
         board.forEach(l->IntStream.generate(()->0).limit(3).forEach(l::add));
     }
 
+    @MessageMapping("/move/ai")
+    @SendTo("/topic/ai")
+    public ResponseEntity<Map<String, List<List<Integer>>>> move(Field field) throws Exception {
+        if(!gameService.moveIsRight(field,board)) throw new BadMoveException();
+       board.get(field.getY()).set(field.getX(),field.getValue());
+        RestTemplate restTemplate = new RestTemplate();
+Map<String,Object> req = new HashMap<>();
+                req.put("board",gameService.flat(board));
+                req.put("player1",field.getOppositeValue());
+                req.put("player2",field.getValue());
+        System.out.println(board);
+        ResponseEntity<String> response
+                = restTemplate.postForEntity("http://localhost:8000/xo/move",req, String.class);
+       int v = Integer.parseInt(response.getBody());
+        System.err.println(response);
+        board.get(gameService.mapTo2DY(v)).set(gameService.mapTo2DX(v),field.getOppositeValue());
+        return ResponseEntity.ok(Collections.singletonMap("board",board));
+    }
+
+
     @MessageMapping("/move")
     @SendTo("/topic/board")
-    public ResponseEntity<Map<String, List<List<Integer>>>> move(Field field) throws Exception {
+    public ResponseEntity<Map<String, List<List<Integer>>>> moveAi(Field field) throws Exception {
         if(gameService.moveIsRight(field,board))
-       board.get(field.getY()).set(field.getX(),field.getValue());
-       return ResponseEntity.ok(Collections.singletonMap("board",board));
+            board.get(field.getY()).set(field.getX(),field.getValue());
+        return ResponseEntity.ok(Collections.singletonMap("board",board));
     }
 
     @MessageMapping("/play")

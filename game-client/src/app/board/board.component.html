@@ -1,9 +1,10 @@
 <span *ngIf="_board.length==3">
 <div *ngFor="let fb of _board;index as y" class="board-line"  >
-  <div *ngFor="let f of fb;index as x" class="field" (click)="changeField(f,x,y)">{{mapSign(f)}}
+  <div *ngFor="let f of fb;index as x" class="field" (click)="changeField(x,y)">{{mapSign(f)}}
   </div>
   </div>
   </span>
 
 <!--<button  name="chooseSide(1)" (click)="chooseSide(1)" >Graj "X"</button>
 <button  name="chooseSide(2)" (click)="chooseSide(2)" >Graj "O"</button>-->
+
