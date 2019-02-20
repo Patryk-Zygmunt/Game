@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,8 @@ import org.springframework.web.client.RestTemplate;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -27,6 +30,8 @@ public class GameController {
 
     @Autowired
     GameService gameService;
+    @Autowired
+    private SimpMessagingTemplate template;
 
     @Autowired
     Jedis jedis;
@@ -41,6 +46,13 @@ public class GameController {
     public ResponseEntity<Map<String, List<List<Integer>>>> move(Field field) throws Exception {
         if(!gameService.moveIsRight(field,board)) throw new BadMoveException();
        board.get(field.getY()).set(field.getX(),field.getValue());
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> {
+            String threadName = Thread.currentThread().getName();
+            System.out.println("Hello " + threadName);
+
+
         RestTemplate restTemplate = new RestTemplate();
 Map<String,Object> req = new HashMap<>();
                 req.put("board",gameService.flat(board));
@@ -52,8 +64,13 @@ Map<String,Object> req = new HashMap<>();
        int v = Integer.parseInt(response.getBody());
         System.err.println(response);
         board.get(gameService.mapTo2DY(v)).set(gameService.mapTo2DX(v),field.getOppositeValue());
+
+            template.convertAndSend("/topic/ai",ResponseEntity.ok(Collections.singletonMap("board",board)));
+        });
         return ResponseEntity.ok(Collections.singletonMap("board",board));
     }
+
+
 
 
     @MessageMapping("/move")
