@@ -12,6 +12,9 @@ export class GameService {
 
   }
 
+   clear(){
+    return  new Array<FieldEnum[]>(3).fill(new Array<FieldEnum>(3).fill(FieldEnum.EMPTY));
+  }
 
 
 

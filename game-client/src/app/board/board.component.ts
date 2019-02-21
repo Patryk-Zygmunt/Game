@@ -10,7 +10,7 @@ import {GameService} from "../_services/game.service";
 export class BoardComponent implements OnInit {
 
   @Input()
-  side:number=1;
+  side:number;
 
   @Input()
   _board : FieldEnum[][]=[];

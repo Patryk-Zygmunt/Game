@@ -1,16 +1,18 @@
 package com.example.game;
 
-import com.example.game.redis.GameRepository;
+import com.example.game.model.XOResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import redis.clients.jedis.Jedis;
 
@@ -22,105 +24,54 @@ import java.util.stream.IntStream;
 
 @Controller
 public class GameController {
-    List<List<Integer>> board = new ArrayList<>(new ArrayList<>());
 
-    {
-        clear();
-    }
+
 
     @Autowired
-    GameService gameService;
+    GameOXService gameOXService;
     @Autowired
     private SimpMessagingTemplate template;
 
-    @Autowired
-    Jedis jedis;
-   private void clear() {
-        this.board.clear();
-        IntStream.range(0,3).forEach(nn->board.add(new ArrayList<>()));
-        board.forEach(l->IntStream.generate(()->0).limit(3).forEach(l::add));
-    }
-
-    @MessageMapping("/move/ai")
-    @SendTo("/topic/ai")
-    public ResponseEntity<Map<String, List<List<Integer>>>> move(Field field) throws Exception {
-        if(!gameService.moveIsRight(field,board)) throw new BadMoveException();
-       board.get(field.getY()).set(field.getX(),field.getValue());
-
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.submit(() -> {
-            String threadName = Thread.currentThread().getName();
-            System.out.println("Hello " + threadName);
 
 
-        RestTemplate restTemplate = new RestTemplate();
-Map<String,Object> req = new HashMap<>();
-                req.put("board",gameService.flat(board));
-                req.put("player1",field.getOppositeValue());
-                req.put("player2",field.getValue());
-        System.out.println(board);
-        ResponseEntity<String> response
-                = restTemplate.postForEntity("http://localhost:8000/xo/move",req, String.class);
-       int v = Integer.parseInt(response.getBody());
-        System.err.println(response);
-        board.get(gameService.mapTo2DY(v)).set(gameService.mapTo2DX(v),field.getOppositeValue());
-
-            template.convertAndSend("/topic/ai",ResponseEntity.ok(Collections.singletonMap("board",board)));
+    @MessageMapping("/move/ai/{gameId}")
+    //@SendTo("/topic/ai")
+    public void move(@DestinationVariable String gameId,Field field)  {
+      //  if(!gameOXService.moveIsPossible(field,board)) throw new BadMoveException();
+        gameOXService.makeMove(gameId,field);
+        Executors.newSingleThreadExecutor().submit(() -> {
+            gameOXService.makeAIMove(gameId,field);
+            template.convertAndSend("/topic/ai/" + gameId,ResponseEntity.ok(new XOResponse(gameOXService.getBoardJedis(gameId))));
         });
-        return ResponseEntity.ok(Collections.singletonMap("board",board));
+        template.convertAndSend("/topic/ai/" + gameId, ResponseEntity.ok(new XOResponse(gameOXService.getBoardJedis(gameId))));
     }
 
-
-
-
-    @MessageMapping("/move")
-    @SendTo("/topic/board")
-    public ResponseEntity<Map<String, List<List<Integer>>>> moveAi(Field field) throws Exception {
-        if(gameService.moveIsRight(field,board))
-            board.get(field.getY()).set(field.getX(),field.getValue());
-        return ResponseEntity.ok(Collections.singletonMap("board",board));
+    @MessageMapping("/move/{gameId}")
+    //@SendTo("/topic/board/{gameId}")
+    public void moveAi(@DestinationVariable String gameId, @RequestBody Field field) {
+        //if(gameOXService.moveIsPossible(field,board))
+            gameOXService.makeMove(gameId,field);
+        template.convertAndSend("/topic/board/" + gameId,ResponseEntity.ok(new XOResponse(gameOXService.getBoardJedis(gameId))));
     }
 
     @MessageMapping("/play")
     @SendTo("/topic/play")
-    public Map<String,Object> play() throws Exception {
-        String waiting =jedis.lpop("waiting1");
-        var res= new HashMap<String,Object>();
-    if(waiting==null){
-        jedis.lpush("waiting1","player");
-        res.put("gameId","wait");
-        res.put("side",1);
-        return res;
-    }else{
-        String uuid = UUID.randomUUID().toString();
-        jedis.lpush("games",uuid);
-        res.put("gameId",uuid);
-        res.put("side",2);
-        return res;
-    }
+    public Map<String,Object> play(Map<String,Object> data) {
+        if((Boolean) data.get("ai")) return gameOXService.playWithAi();
+        return gameOXService.play((String)data.get("name"));
+
     }
 
-    @MessageMapping("/clear")
-    @SendTo("/topic/board")
-    public ResponseEntity<Map<String, List<List<Integer>>>> clearBoard() throws Exception {
-        clear();
-        return ResponseEntity.ok(Collections.singletonMap("board",board));
-    }
-
+//    @MessageMapping("/clear")
+//    @SendTo("/topic/board")
+//    public ResponseEntity<XOResponse> clearBoard() throws Exception {
+//        board.clear();
+//        jedis.ltrim(gameId,0,8);
+//        IntStream.range(0,9).forEach(i->board.add(0));
+//        saveBoardJedis(board,gameId);
 //
-//    @GetMapping("/g/{id}")
-//    public ResponseEntity geee(@PathVariable  String id){
-//       jedis.lpush(id,board.get(0).stream().map().collect(Collectors.toList()))
-//      return new ResponseEntity( jedis.set(id,new Field()), HttpStatus.ACCEPTED);
+//        return ResponseEntity.ok(XOResponse.empty());
 //    }
-
-    @GetMapping("/f/{id}")
-    public ResponseEntity geees(@PathVariable  String id){
-        return new ResponseEntity( jedis.get(id), HttpStatus.ACCEPTED);
-    }
-
-
-
 
 }
 

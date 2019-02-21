@@ -15,11 +15,12 @@ export class AppComponent {
   name: string;
   disabled: boolean;
   board: FieldEnum[][]=[];
-  msg:string;
-  side:number=2;
+  gameID:string;
+  side:number=0;
+  withAI:boolean;
 
   constructor(private gameService:GameService){
-    this.connect()
+
   }
 
   connect() {
@@ -32,20 +33,41 @@ export class AppComponent {
       that.ws.subscribe("/errors", function(message) {
         alert("Error " + message.body);
       });
-      that.ws.subscribe("/topic/play", function(state) {
-        console.log(state);
-     if(that.side==0)   that.side = <number>(JSON.parse(state.body)).side
-       that.msg = <string>(JSON.parse(state.body)).gameId
-      });
-      that.ws.subscribe("/topic/board", function(state) {
+      that.ws.subscribe("/topic/board/"+that.gameID, function(state) {
         that.board = <FieldEnum[][]>(JSON.parse(state.body)).body.board;
       });
-      that.ws.subscribe("/topic/ai", function(state) {
+      that.ws.subscribe("/topic/ai/" + that.gameID, function(state) {
         that.board = <FieldEnum[][]>(JSON.parse(state.body)).body.board;
       });
       that.disabled = true;
     }, function(error) {
       alert("STOMP error " + error);
+    });
+  }
+
+
+  newGame(withAI:boolean) {
+    this.board = this.gameService.clear();
+    let socket = new WebSocket("ws://localhost:8086/socket");
+    this.ws = Stomp.over(socket);
+    let that = this;
+    this.ws.connect({}, function(frame) {
+      that.ws.subscribe("/errors", function(message) {
+        console.log("Error " + message.body);
+      });
+      that.ws.subscribe("/topic/play", function(state) {
+        console.log(state);
+        if(that.side==0)   that.side = <number>(JSON.parse(state.body)).side
+        that.gameID = <string>(JSON.parse(state.body)).gameId
+        if(withAI || (that.gameID.length>10)){
+          that.disconnect()
+          that.connect()
+        }
+      });
+      that.ws.send("/app/play",{},JSON.stringify({ai:withAI,name:"player"}));
+      that.disabled = true;
+    }, function(error) {
+  console.log("STOMP error " + error);
     });
   }
 
@@ -58,15 +80,24 @@ export class AppComponent {
   }
 
   play() {
-    this.ws.send("/app/play");
+    this.disconnect()
+    this.withAI = false;
+    this.newGame(false);
+  }
+
+  playWithAI() {
+    this.disconnect();
+    this.withAI = true;
+    this.newGame(true);
   }
 
   setField(data: Field) {
-    console.log("FIELD::"+data);
-    this.ws.send("/app/move/ai", {}, JSON.stringify(data));
+    if(this.withAI) this.ws.send("/app/move/ai/"+this.gameID, {}, JSON.stringify(data));
+    else this.ws.send("/app/move/"+this.gameID, {}, JSON.stringify(data));
   }
 
 clear(){
+    this.disconnect();
   this.ws.send("/app/clear" );
 
 }
@@ -75,7 +106,6 @@ clear(){
     this.disabled = connected;
     this.showConversation = connected;
   }
-
 
 
 
