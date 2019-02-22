@@ -45,7 +45,7 @@ public class GameOXService {
             jedis.lpush("games", uuid);
             newGame(uuid);
             res.put("gameId", uuid);
-            res.put("side", 2);
+            res.put("side", 1);
             return res;
         }
 
@@ -53,6 +53,7 @@ public class GameOXService {
 
 
     public void newGame(String gameId){
+        jedis.set(gameId + "#round",String.valueOf(1));
         List<Integer> newBoard = new ArrayList<>();
         IntStream.range(0,9).forEach(i->newBoard.add(0));
         saveBoardJedis(newBoard,gameId);
@@ -67,10 +68,15 @@ public class GameOXService {
     }
 
     public void makeMove( String gameId,Field field){
+        jedis.set(gameId + "#round",String.valueOf(field.getOppositeValue()));
         jedis.lset(gameId,field.mapTo1Dim(),String.valueOf(field.getValue()));
+    }
+    protected boolean isPlayerRound(String gameId, Field field){
+        return Integer.parseInt(jedis.get(gameId + "#round")) == field.getValue();
     }
 
     public void makeOppositeMove( String gameId,int x, Field field){
+        jedis.set(gameId + "#round",String.valueOf(field.getValue()));
         jedis.lset(gameId,x,String.valueOf(field.getOppositeValue()));
     }
 
@@ -79,15 +85,23 @@ public class GameOXService {
         return board.stream().flatMap(Collection::stream).toArray(Integer[]::new);
     }
 
-    public boolean moveIsPossible(Field field, List<List<Integer>> board) {
-        if(field.getX() < 0 || field.getX() > 2 ) return  false;
-        if(board.get(field.getY()).get(field.getX())!=0) return false;
-        return true;
+    public boolean moveIsPossible(Field field,String gameID) {
+        if(field.mapTo1Dim()<0 || field.mapTo1Dim() > 8) return  false;
+        if(getBoardJedis(gameID).get(field.mapTo1Dim()) != 0) return false;
+        return isPlayerRound(gameID, field);
     }
 
-    public boolean checkWin(Field field, List<List<Integer>> board){
-        return  false;
+    public int checkWin(String gameId){
+        RestTemplate restTemplate = new RestTemplate();
+        Map<String, Object> req = new HashMap<>();
+        req.put("board", getBoardJedis(gameId));
+        ResponseEntity<String> response
+                = restTemplate.postForEntity("http://localhost:8000/xo/win", req, String.class);
+        return Integer.parseInt(response.getBody());
     }
+
+
+
 
     public void makeAIMove(String gameId, Field field) {
         RestTemplate restTemplate = new RestTemplate();

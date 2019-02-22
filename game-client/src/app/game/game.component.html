@@ -1,0 +1,11 @@
+<div class="container">
+  <!--<input  [ngModel] = "msgText" name="name" type="text">-->
+
+  <button type="button" (click)="clear()">Clear</button>
+  <button type="button" (click)="play()">Play</button>
+  <button type="button" (click)="playWithAI()">Play with Computer</button>
+  {{gameID}}
+
+  <app-board [board]="board" (setField)="setField($event)" [side]="side" [result]="gameResult" [blockMove]="blockMove" ></app-board>
+</div>
+

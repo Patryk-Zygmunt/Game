@@ -46,4 +46,9 @@ public class TicToeBoard extends Board<OX> {
     public int getMove() {
         return move;
     }
+
+    @Override
+    public boolean endGame() {
+        return Arrays.asList(board).stream().allMatch(v->v!=OX.EMPTY);
+    }
 }

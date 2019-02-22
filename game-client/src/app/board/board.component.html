@@ -1,10 +1,11 @@
+
 <span *ngIf="_board.length==3">
-<div *ngFor="let fb of _board;index as y" class="board-line"  >
-  <div *ngFor="let f of fb;index as x" class="field" (click)="changeField(x,y)">{{mapSign(f)}}
+<div *ngFor="let fb of _board;index as y" class="board-line" >
+  <div *ngFor="let f of fb;index as x" class="field" [style.background-color]="badMove ? '#d85f5f' : '#20c997'" (click)="changeField(x,y)">{{mapSign(f)}}
   </div>
   </div>
   </span>
-
+<h5>{{gameResult}}</h5>
 <!--<button  name="chooseSide(1)" (click)="chooseSide(1)" >Graj "X"</button>
 <button  name="chooseSide(2)" (click)="chooseSide(2)" >Graj "O"</button>-->
 

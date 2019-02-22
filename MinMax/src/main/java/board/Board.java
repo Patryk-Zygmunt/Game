@@ -9,5 +9,6 @@ public abstract  class Board<T extends GameValue> {
     public abstract boolean isPossibleMove(int x,  T v);
     public  abstract  List<Board> generatePossibleStates(T v);
     public abstract  int getMove();
+    public abstract  boolean endGame();
 
 }

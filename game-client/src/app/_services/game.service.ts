@@ -9,8 +9,9 @@ export class GameService {
 
   static rightMove(move: Field, board: FieldEnum[][]){
    return board[move.y][move.x] == FieldEnum.EMPTY;
-
   }
+
+
 
    clear(){
     return  new Array<FieldEnum[]>(3).fill(new Array<FieldEnum>(3).fill(FieldEnum.EMPTY));

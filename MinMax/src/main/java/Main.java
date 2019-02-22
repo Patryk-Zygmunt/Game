@@ -2,6 +2,7 @@ import board.Board;
 import board.OX;
 import board.TicToeBoard;
 import com.google.gson.Gson;
+import evaluation.EvaluationOX;
 import game.Game;
 import game.GameOX;
 
@@ -18,7 +19,12 @@ public class Main {
             Game game = new GameOX();
          return  game.nextMove(new TicToeBoard(state.getBoard().toArray(new OX[0])), state.getPlayer1(),state.getPlayer2())  ;
         });
-        post("/hello", (req, res)->req.queryParams("tab"));
+        post("/xo/win", (req, res)->{
+            State state = new Gson().fromJson(req.body(),State.class);
+            Game game = new GameOX();
+            return  game.checkWin(new TicToeBoard(state.getBoard().toArray(new OX[0])), OX.X,OX.O, new EvaluationOX())  ;
+        });
+
     }
 }
 

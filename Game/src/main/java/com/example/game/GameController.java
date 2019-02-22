@@ -36,22 +36,29 @@ public class GameController {
 
     @MessageMapping("/move/ai/{gameId}")
     //@SendTo("/topic/ai")
-    public void move(@DestinationVariable String gameId,Field field)  {
-      //  if(!gameOXService.moveIsPossible(field,board)) throw new BadMoveException();
+    public void moveAi(@DestinationVariable String gameId,Field field)  {
+     if(!gameOXService.moveIsPossible(field,gameId)) throw new BadMoveException();
         gameOXService.makeMove(gameId,field);
-        Executors.newSingleThreadExecutor().submit(() -> {
-            gameOXService.makeAIMove(gameId,field);
-            template.convertAndSend("/topic/ai/" + gameId,ResponseEntity.ok(new XOResponse(gameOXService.getBoardJedis(gameId))));
-        });
-        template.convertAndSend("/topic/ai/" + gameId, ResponseEntity.ok(new XOResponse(gameOXService.getBoardJedis(gameId))));
+        int winPlayer = gameOXService.checkWin(gameId);
+       XOResponse xoPlayer =  new XOResponse(gameOXService.getBoardJedis(gameId),winPlayer);
+        template.convertAndSend("/topic/ai/" + gameId, ResponseEntity.ok(xoPlayer));
+
+       if(winPlayer==0) {
+           Executors.newSingleThreadExecutor().submit(() -> {
+               gameOXService.makeAIMove(gameId, field);
+               int winAI = gameOXService.checkWin(gameId);
+               template.convertAndSend("/topic/ai/" + gameId, ResponseEntity.ok(new XOResponse(gameOXService.getBoardJedis(gameId), winAI)));
+           });
+       }
     }
 
     @MessageMapping("/move/{gameId}")
     //@SendTo("/topic/board/{gameId}")
-    public void moveAi(@DestinationVariable String gameId, @RequestBody Field field) {
-        //if(gameOXService.moveIsPossible(field,board))
+    public void move(@DestinationVariable String gameId, @RequestBody Field field) {
+        if(!gameOXService.moveIsPossible(field,gameId)) throw new BadMoveException();
             gameOXService.makeMove(gameId,field);
-        template.convertAndSend("/topic/board/" + gameId,ResponseEntity.ok(new XOResponse(gameOXService.getBoardJedis(gameId))));
+           int win = gameOXService.checkWin(gameId);
+        template.convertAndSend("/topic/board/" + gameId,ResponseEntity.ok(new XOResponse(gameOXService.getBoardJedis(gameId),win)));
     }
 
     @MessageMapping("/play")

@@ -6,7 +6,7 @@ import java.util.stream.IntStream;
 
 public class XOResponse {
     List<List<Integer>> board = new ArrayList<>(new ArrayList<>());
-
+ private int win=0;
 
     public XOResponse(List<Integer> board) {
     this.clear();
@@ -16,6 +16,14 @@ public class XOResponse {
     }
 
     private XOResponse() {
+    }
+
+    public XOResponse(List<Integer> board, int win) {
+        this.clear();
+        IntStream.range(0,9).forEach(index->{
+            this.board.get(mapTo2DY(index)).set(mapTo2DX(index),board.get(index));
+        });
+        this.win= win;
     }
 
     private  void clear( ) {
@@ -46,5 +54,13 @@ public class XOResponse {
 
     public void setBoard(List<List<Integer>> board) {
         this.board = board;
+    }
+
+    public int getWin() {
+        return win;
+    }
+
+    public void setWin(int win) {
+        this.win = win;
     }
 }

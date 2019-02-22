@@ -17,6 +17,13 @@ public abstract class  Game {
 
      public abstract int nextMove(Board board, GameValue maximizedVal, GameValue minimizedVal);
 
+   public int checkWin(Board board, GameValue maximizedVal, GameValue minimizedVal, EvaluationFunction fun){
+       int val  = fun.evaluate(board,maximizedVal,minimizedVal);
+       if(val==Integer.MAX_VALUE) return maximizedVal.getVal();
+       if(val==Integer.MIN_VALUE) return minimizedVal.getVal();
+       if(board.endGame()) return -1;
+       return 0;
+   }
 
 
 
