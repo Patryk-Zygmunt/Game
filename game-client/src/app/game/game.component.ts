@@ -34,7 +34,7 @@ export class GameComponent implements OnInit {
 
   @Input()
   set gameUri(val : string) {
-
+      this._gameUri=val;
 
   }
 
@@ -49,14 +49,14 @@ export class GameComponent implements OnInit {
       that.ws.subscribe("/errors", function(message) {
         console.log("Error " + message.body);
       });
-      that.ws.subscribe("/topic/board/"+that.gameID, function(state) {
+      that.ws.subscribe(`/topic${that._gameUri}/board/`+that.gameID, function(state) {
         that.board = <FieldEnum[][]>(JSON.parse(state.body)).body.board;
-        that.blockMove = false; //trezba na serwie
+        that.blockMove = <number>(JSON.parse(state.body)).body.move != that.side;
         that.gameResult = <number>(JSON.parse(state.body)).body.win;
       });
-      that.ws.subscribe("/topic/ai/" + that.gameID, function(state) {
+      that.ws.subscribe(`/topic${that._gameUri}/ai/` + that.gameID, function(state) {
         that.board = <FieldEnum[][]>(JSON.parse(state.body)).body.board;
-        that.blockMove = false;
+        that.blockMove = <number>(JSON.parse(state.body)).body.move != that.side;
         that.gameResult = <number>(JSON.parse(state.body)).body.win;
       });
       that.disabled = true;
@@ -77,7 +77,7 @@ export class GameComponent implements OnInit {
       that.ws.subscribe("/errors", function(message) {
         console.log("Error " + message.body);
       });
-      that.ws.subscribe("/topic/play", function(state) {
+      that.ws.subscribe(`/topic${that._gameUri}/play`, function(state) {
         console.log(state);
         if(that.side==0)   that.side = <number>(JSON.parse(state.body)).side
         that.gameID = <string>(JSON.parse(state.body)).gameId
@@ -87,7 +87,7 @@ export class GameComponent implements OnInit {
           that.connect()
         }
       });
-      that.ws.send("/app/play",{},JSON.stringify({ai:withAI,name:"player"}));
+      that.ws.send(`/app${that._gameUri}/play`,{},JSON.stringify({ai:withAI,name:"player"}));
       that.disabled = true;
     }, function(error) {
       console.log("STOMP error " + error);
@@ -116,8 +116,8 @@ export class GameComponent implements OnInit {
 
   setField(data: Field) {
     this.blockMove =true;
-    if(this.withAI) this.ws.send("/app/move/ai/"+this.gameID, {}, JSON.stringify(data));
-    else this.ws.send("/app/move/"+this.gameID, {}, JSON.stringify(data));
+    if(this.withAI) this.ws.send(`/app${this._gameUri}/move/ai/`+this.gameID, {}, JSON.stringify(data));
+    else this.ws.send(`/app${this._gameUri}/move/`+this.gameID, {}, JSON.stringify(data));
   }
 
   clear(){

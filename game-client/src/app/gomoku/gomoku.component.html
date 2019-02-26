@@ -1,0 +1,8 @@
+<span *ngIf="_board.length==15">
+<div *ngFor="let fb of _board;index as y" class="board-line" >
+  <div *ngFor="let f of fb;index as x" class="field" [style.background-color]="badMove ? '#d85f5f' : '#20c997'"
+       (click)="changeField(x,y)" [innerHtml]="mapSign(f) | safeHtml">
+  </div>
+  </div>
+  </span>
+<h5>{{gameResult}}</h5>

@@ -1,5 +1,7 @@
 package com.example.game.model;
 
+import org.springframework.data.redis.core.RedisHash;
+
 import java.io.Serializable;
 
 
@@ -27,11 +29,7 @@ public class Field implements Serializable {
         else return 1;
     }
 
-    public int get1Dim(){
-      if(y==0) return x;
-      if(y==1) return x+3;
-               return x+6;
-    };
+
 
     public void setX(int x) {
         this.x = x;

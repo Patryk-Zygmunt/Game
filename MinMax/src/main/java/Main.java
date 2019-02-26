@@ -7,11 +7,13 @@ import game.Game;
 import game.GameOX;
 
 import java.util.List;
+import java.util.Random;
 
 import static spark.Spark.*;
 
 public class Main {
     public static void main(String[] args) {
+        HelloWorld.main();
 
         port(8000);
         post("/xo/move", (req, res)->{
@@ -23,6 +25,17 @@ public class Main {
             State state = new Gson().fromJson(req.body(),State.class);
             Game game = new GameOX();
             return  game.checkWin(new TicToeBoard(state.getBoard().toArray(new OX[0])), OX.X,OX.O, new EvaluationOX())  ;
+        });
+
+        post("/gomoku/move", (req, res)->{
+            State state = new Gson().fromJson(req.body(),State.class);
+            Game game = new GameOX();
+            return  new Random().nextInt(224) ;
+        });
+        post("/gomoku/win", (req, res)->{
+            State state = new Gson().fromJson(req.body(),State.class);
+
+            return "0"  ;
         });
 
     }
