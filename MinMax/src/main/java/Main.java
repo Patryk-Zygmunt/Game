@@ -1,12 +1,14 @@
-import board.Board;
+import board.GomokuVal;
 import board.OX;
 import board.TicToeBoard;
 import com.google.gson.Gson;
 import evaluation.EvaluationOX;
 import game.Game;
 import game.GameOX;
+import model.GomokuState;
+import model.XOState;
 
-import java.util.List;
+
 import java.util.Random;
 
 import static spark.Spark.*;
@@ -17,56 +19,27 @@ public class Main {
 
         port(8000);
         post("/xo/move", (req, res)->{
-            State state = new Gson().fromJson(req.body(),State.class);
+            XOState state = new Gson().fromJson(req.body(), XOState.class);
             Game game = new GameOX();
          return  game.nextMove(new TicToeBoard(state.getBoard().toArray(new OX[0])), state.getPlayer1(),state.getPlayer2())  ;
         });
         post("/xo/win", (req, res)->{
-            State state = new Gson().fromJson(req.body(),State.class);
+            XOState state = new Gson().fromJson(req.body(), XOState.class);
             Game game = new GameOX();
             return  game.checkWin(new TicToeBoard(state.getBoard().toArray(new OX[0])), OX.X,OX.O, new EvaluationOX())  ;
         });
 
         post("/gomoku/move", (req, res)->{
-            State state = new Gson().fromJson(req.body(),State.class);
-            Game game = new GameOX();
-            return  new Random().nextInt(224) ;
+            GomokuState state = new Gson().fromJson(req.body(), GomokuState.class);
+            Game game = new GomokuGame();
+            return   game.nextMove(new GomokuBoard(state.getBoard()), GomokuVal.BLACK, GomokuVal.WHITE );
         });
         post("/gomoku/win", (req, res)->{
-            State state = new Gson().fromJson(req.body(),State.class);
-
-            return "0"  ;
+            GomokuState state = new Gson().fromJson(req.body(), GomokuState.class);
+            Game game = new GomokuGame();
+          return  game.checkWin(new GomokuBoard(state.getBoard()), GomokuVal.BLACK, GomokuVal.WHITE );
         });
 
     }
 }
 
-class State{
-    private List<OX> board;
-    private OX player1;
-    private OX player2;
-
-    public List<OX> getBoard() {
-        return board;
-    }
-
-    public void setBoard(List<OX> board) {
-        this.board = board;
-    }
-
-    public OX getPlayer1() {
-        return player1;
-    }
-
-    public void setPlayer1(OX player1) {
-        this.player1 = player1;
-    }
-
-    public OX getPlayer2() {
-        return player2;
-    }
-
-    public void setPlayer2(OX player2) {
-        this.player2 = player2;
-    }
-}

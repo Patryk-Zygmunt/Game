@@ -36,7 +36,7 @@ public class Tree {
          // final Comparator<Tree> comparator = whichMove ? (Comparator.comparingInt(t1 -> t1.rate)) : (Comparator.comparingInt(t1 -> t1.rate));
         final var newDepth =  ++depth;
         final int rate = fun.evaluate(board, maximizeVal,minimizeVal);
-       if(depth == depthMax || rate !=0) {
+       if(depth == depthMax || rate == Integer.MAX_VALUE  || rate == Integer.MIN_VALUE) {
             tree.rate = rate;
             tree.states = new LinkedList<>();
         }

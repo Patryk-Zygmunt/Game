@@ -11,5 +11,11 @@ public class GameOX extends Game {
         return super.nextMove(board, maximizedVal, minimizedVal, 7, new EvaluationOX());
     }
 
+    @Override
+    public int checkWin(Board board, GameValue maximizedVal, GameValue minimizedVal) {
+        return super.checkWin(board, maximizedVal, minimizedVal,  new EvaluationOX());
+
+    }
+
 
 }
