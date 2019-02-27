@@ -7,6 +7,8 @@ import { GameComponent } from './game/game.component';
 import { GomokuComponent } from './gomoku/gomoku.component';
 import {GameService} from "./_services/game.service";
 import {HtmlSanitizer} from "./pipes/html-sanitizer";
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import { ModalResultComponent } from './modal-result/modal-result.component';
 
 @NgModule({
   declarations: [
@@ -14,10 +16,15 @@ import {HtmlSanitizer} from "./pipes/html-sanitizer";
     BoardComponent,
     GameComponent,
     GomokuComponent,
-    HtmlSanitizer
+    HtmlSanitizer,
+    ModalResultComponent,
+
+
   ],
+  entryComponents:[ModalResultComponent],
   imports: [
-    BrowserModule
+    BrowserModule,
+    NgbModule
   ],
   providers: [GameService],
   bootstrap: [AppComponent]

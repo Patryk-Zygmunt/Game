@@ -10,7 +10,7 @@ import {GameService} from "./_services/game.service";
 })
 export class AppComponent {
 
-  game:string;
+  game:string='/xo';
 
   constructor() { }
 

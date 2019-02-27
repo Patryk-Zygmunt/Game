@@ -23,7 +23,7 @@ class GomokuBoard(board: Array[GomokuVal],move: Int) extends Board[GomokuVal]{
   override def generatePossibleStates(v: GomokuVal): util.List[Board[_ <: GameValue]] = _generatePossbleStates(v).toList.asJava
 
   private def _generatePossbleStates(v: GomokuVal):Array[Board[_ <: GameValue]]= {
-    print((1 to board.length).toArray.deep.mkString("\n"))
+   // print((1 to board.length).toArray.deep.mkString("\n"))
     board.indices.toArray filter (i => isPossibleMove(i, GomokuVal.EMPTY)) map (i => newState(i, v))
   }
 
@@ -31,4 +31,9 @@ class GomokuBoard(board: Array[GomokuVal],move: Int) extends Board[GomokuVal]{
   override def getMove: Int = move
 
   override def endGame(): Boolean = ! (board contains EMPTY)
+
+
+  override def toString: String =  _board.splitAt(14)._1.mkString(" ")
+
+
 }

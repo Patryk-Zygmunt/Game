@@ -1,17 +1,18 @@
-<div class="container">
+<div class="container-fluid">
   <!--<input  [ngModel] = "msgText" name="name" type="text">-->
-
-  <button type="button" (click)="clear()">Clear</button>
-  <button type="button" (click)="play()">Play</button>
-  <button type="button" (click)="playWithAI()">Play with Computer</button>
+<div class="row">
+  <div class="col-2" style="background-color:#343a40!important ">
+    <div class="btn-group-vertical" style="width:100%">
+  <button type="button" style="width:100%" class="btn-primary" (click)="play()">Play with other player</button>
+     <button type="button" style="width:100%" class="btn-primary" (click)="playWithAI()">Play with Computer</button>
+    </div>
   {{gameID}}
+  </div>
+  <div class="col-9">
+  <app-board *ngIf="_gameUri=='/xo'" [board]="board" (setField)="setField($event)" [side]="side" [result]="gameResult" [blockMove]="blockMove" ></app-board>
 
-<!--
-  <app-board [board]="board" (setField)="setField($event)" [side]="side" [result]="gameResult" [blockMove]="blockMove" ></app-board>
-
--->
-
-  <app-gomoku [board]="board" (setField)="setField($event)" [side]="side" [result]="gameResult" [blockMove]="blockMove" ></app-gomoku>
-
+    <app-gomoku *ngIf="_gameUri=='/gomoku'" [board]="board" (setField)="setField($event)" [side]="side" [result]="gameResult" [blockMove]="blockMove" ></app-gomoku>
+  </div>
+  </div>
 </div>
 

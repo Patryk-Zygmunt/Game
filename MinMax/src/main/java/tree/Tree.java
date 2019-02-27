@@ -75,7 +75,7 @@ public class Tree {
 
     @Override
     public String toString() {
-        return "("+depth+":"+rate+")";
+        return board + "("+depth+":"+rate+")";
 
     }
 

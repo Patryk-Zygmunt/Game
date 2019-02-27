@@ -1,6 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Field, FieldEnum} from '../_model/interfaces'
 import {GameService} from "../_services/game.service";
+import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {ModalResultComponent} from "../modal-result/modal-result.component";
+
+
 
 @Component({
   selector: 'app-board',
@@ -13,18 +17,17 @@ export class BoardComponent implements OnInit {
   _side:number;
   oppositeSide:number;
   badMove:boolean;
-  gameResult:String="";
+
   @Input()
   blockMove:boolean;
 
   @Input()
   _board : FieldEnum[][]=[];
   @Output('setField') boardEvent = new EventEmitter<Field>();
-  constructor(private gameService:GameService) { }
+  constructor(private gameService:GameService,private modalService: NgbModal) { }
 
   ngOnInit() {
 this._board =this.clear();
-    console.log(">>>>34343>>>"+ this._board)
   }
 
   @Input()
@@ -34,27 +37,29 @@ this._board =this.clear();
       if(val==2) this.oppositeSide = 1;
   }
 
+  open(val) {
+    const modalRef = this.modalService.open(ModalResultComponent);
+    modalRef.componentInstance.result = {result:val,side:this._side,opponent:this.oppositeSide};
+  }
+
 
   @Input()
   set result(val : number) {
-    this.gameResult="";
-    if(val===this._side) this.gameResult="WIN"
-        if(val===this.oppositeSide) this.gameResult="Loose";
-        if(val==-1) this.gameResult="REMIS"
+   // if(val!=0)this.open(val)
   }
 
   @Input('board')
   set board(val : FieldEnum[][]) {
-    if (val.length >0) {
-      console.log(">>>>89>>>"+val)
+    if (val.length ==3) {
       this._board = val;
     }
-    console.log(">>>>89>>>"+val)
+    else {
+      this._board = this.clear()
+    }
 
   }
 
   changeField( x:number, y:number){
-    console.log("CHANGE_FIELD")
     const move : Field = {
       x: x,
       y: y,

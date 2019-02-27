@@ -2,6 +2,24 @@
 <!--
   <app-game [gameUri]="'/xo'"></app-game>
 -->
-  <app-game [gameUri]="'/gomoku'"></app-game>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <!-- Navbar content -->
+<div class="row">
+  <div class="col-4"> <h3 style="color:whitesmoke">Game</h3></div>
+  <div class="col-3">
+      <button type="button" class="btn-primary" (click)="game='/xo'">X&O</button>
+  </div>
+  <div class="col-3">
+
+  <button type="button" class="btn-primary" (click)="game='/gomoku'">Gomoku</button>
+  </div>
+</div>
+
+
+
+
+</nav>
+
+  <app-game [gameUri]="game"></app-game>
 
 

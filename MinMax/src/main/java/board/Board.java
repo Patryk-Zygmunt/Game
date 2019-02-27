@@ -11,4 +11,5 @@ public abstract  class Board<T extends GameValue> {
     public abstract  int getMove();
     public abstract  boolean endGame();
 
+
 }

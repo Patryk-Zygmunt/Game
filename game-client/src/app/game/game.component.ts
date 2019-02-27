@@ -35,7 +35,7 @@ export class GameComponent implements OnInit {
   @Input()
   set gameUri(val : string) {
       this._gameUri=val;
-
+      this.disconnect()
   }
 
 

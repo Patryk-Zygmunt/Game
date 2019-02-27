@@ -15,7 +15,7 @@ import static spark.Spark.*;
 
 public class Main {
     public static void main(String[] args) {
-        HelloWorld.main();
+
 
         port(8000);
         post("/xo/move", (req, res)->{
