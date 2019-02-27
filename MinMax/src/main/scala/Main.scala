@@ -2,12 +2,6 @@ import board.{GameValue, GomokuVal}
 import board.GomokuVal._
 
 object HelloWorld {
-  def main(array: Array[String]): Unit = {
-  var a =  Array.fill(10){(EMPTY,true)};
-    //a(3)= WHITE
-    a.unzip
-    ///findVertical(a,WHITE)
-  }
 
 
 

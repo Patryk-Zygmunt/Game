@@ -9,8 +9,6 @@ import model.GomokuState;
 import model.XOState;
 
 
-import java.util.Random;
-
 import static spark.Spark.*;
 
 public class Main {
